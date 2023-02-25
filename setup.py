@@ -1,7 +1,7 @@
 import os
-import sys
-import shutil
 import platform
+import shutil
+import sys
 
 from setuptools import find_packages, setup
 
@@ -32,6 +32,9 @@ dependent_packages = {
     "uvicorn": ("0.20.0", CORE),
     "transformers": ("4.26.1", CORE),
     "pillow": ("9.4.0", CORE),
+    "pre-commit": ("3.1.0", CORE),
+    "numpy": ("1.23.5", CORE),
+    "python-multipart": ("0.0.5", CORE),
     # For tests
     "pytest": ("7.2.1", TEST),
 
