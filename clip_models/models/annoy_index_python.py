@@ -15,7 +15,6 @@ class AnnoyIndex:
           
     def get_nearest_images(self, text, n = 3):
         nns = self.index.get_nns_by_vector(self._process_text(text)[0], n, include_distances=True)
-        print(nns)
         result = {}
         for img, distance in zip(nns[0], nns[1]):
             result[self.mapping_id_to_image[img]] = distance

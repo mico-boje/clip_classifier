@@ -3,6 +3,7 @@ import platform
 import shutil
 import sys
 
+from Cython.Build import cythonize
 from setuptools import find_packages, setup
 
 VERSION = '0.1.0'
@@ -25,6 +26,8 @@ CORE = "full, install"
 TEST = "test, full"
 INFERENCE = "inference, full"
 
+url_dependencies = ["clip @ git+https://github.com/openai/CLIP.git"]
+
 dependent_packages = {
     #For shared libraries
     "loguru": ("0.6.0", CORE),
@@ -36,7 +39,6 @@ dependent_packages = {
     "numpy": ("1.23.5", CORE),
     "python-multipart": ("0.0.5", CORE),
     "annoy": ("1.7.1", CORE),
-    "clip": ("git+https://github.com/openai/CLIP.git", CORE),
     # For tests
     "pytest": ("7.2.1", TEST),
 
@@ -45,7 +47,7 @@ dependent_packages = {
 }
 
 tag_to_packages: dict = {
-    extra: []
+    extra: url_dependencies
     for extra in REQUIREMENTS_GROUPS
 }
 for package, (min_version, extras) in dependent_packages.items():
@@ -85,10 +87,13 @@ setup(
     description=DESCRIPTION,
     author=AUTHORS,
     python_requires=f">={python_min_version_str}",
-    depency_links=["git+https://github.com/openai/CLIP.git"],
-    install_requires=tag_to_packages["install"],
+    #depency_links=["git+https://github.com/openai/CLIP.git"],
+    ext_modules=cythonize("clip_models/models/*.pyx", build_dir="build", language_level=3),
+    install_requires=[tag_to_packages["install"]],
     **extra_setuptools_args
 )
+
+# Build Cython modules
 
 # post install script
 
