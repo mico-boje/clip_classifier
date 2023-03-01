@@ -6,7 +6,7 @@ import sys
 from setuptools import find_packages, setup
 
 VERSION = '0.1.0'
-NAME = 'clip-classifier'
+NAME = 'clip-models'
 DESCRIPTION = ''
 AUTHORS = "Mico Bøje"
 
@@ -35,6 +35,8 @@ dependent_packages = {
     "pre-commit": ("3.1.0", CORE),
     "numpy": ("1.23.5", CORE),
     "python-multipart": ("0.0.5", CORE),
+    "annoy": ("1.7.1", CORE),
+    "clip": ("git+https://github.com/openai/CLIP.git", CORE),
     # For tests
     "pytest": ("7.2.1", TEST),
 
@@ -83,6 +85,7 @@ setup(
     description=DESCRIPTION,
     author=AUTHORS,
     python_requires=f">={python_min_version_str}",
+    depency_links=["git+https://github.com/openai/CLIP.git"],
     install_requires=tag_to_packages["install"],
     **extra_setuptools_args
 )
