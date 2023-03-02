@@ -1,8 +1,14 @@
 # cython: language_level=3
 
 import annoy
-import clip
+import numpy as np
 import torch
+
+cimport cython
+cimport numpy as np
+from cython.view cimport array as cvarray
+
+from clip import clip
 
 
 cdef class AnnoyIndex:
@@ -22,10 +28,13 @@ cdef class AnnoyIndex:
         self.mapping_id_to_image = {}
         
           
-    def get_nearest_images(self, text, n = 3):
-        nns = self.index.get_nns_by_vector(self._process_text(text)[0], n, include_distances=True)
+    def get_nearest_images(self, str text, int n = 5):
+        cdef tuple nns = self.index.get_nns_by_vector(self.process_text(text)[0], n, include_distances=True)
         cdef dict result = {}
-        for img, distance in zip(nns[0], nns[1]):
+        cdef int i
+        for i in range(n):
+            img = nns[0][i]
+            distance = nns[1][i]
             result[self.mapping_id_to_image[img]] = distance
         return result
 
@@ -45,8 +54,15 @@ cdef class AnnoyIndex:
             image_features = self.model.encode_image(image)
         return image_features.detach().cpu().numpy()
     
-    def _process_text(self, text):
-        text = clip.tokenize([text]).to(self.device)
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef np.ndarray[np.float32_t, ndim=2] _process_text(self, str text):
+        text_tensor = clip.tokenize([text]).to(self.device)
         with torch.no_grad():
-            text_features = self.model.encode_text(text)
+            text_features = self.model.encode_text(text_tensor)
         return text_features.detach().cpu().numpy()
+
+    def process_text(self, str text):
+        cdef np.ndarray[np.float32_t, ndim=2] features
+        features = self._process_text(text)
+        return features

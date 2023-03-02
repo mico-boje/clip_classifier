@@ -3,6 +3,7 @@ import platform
 import shutil
 import sys
 
+import numpy
 from Cython.Build import cythonize
 from setuptools import find_packages, setup
 
@@ -88,8 +89,9 @@ setup(
     author=AUTHORS,
     python_requires=f">={python_min_version_str}",
     #depency_links=["git+https://github.com/openai/CLIP.git"],
-    ext_modules=cythonize("clip_models/models/*.pyx", build_dir="build", language_level=3),
+    ext_modules=cythonize("clip_models/models/*.pyx", build_dir="build", language_level=3, annotate=True),
     install_requires=[tag_to_packages["install"]],
+    include_dirs=[numpy.get_include()],
     **extra_setuptools_args
 )
 
